@@ -1,0 +1,22 @@
+product_id,company,product,type,cpu,gpu,price,current_stock,reorder_level,reorder_quantity
+1001,Lenovo,ThinkPad X1 Carbon,Ultrabook,Intel i7,Intel UHD,1500,12,5,10
+1002,Dell,Inspiron 15,Notebook,Intel i5,Nvidia MX350,900,4,5,10
+1003,HP,Pavilion 14,Notebook,Intel i5,Intel Iris,850,20,5,10
+1004,Apple,MacBook Air,Ultrabook,Apple M1,Integrated,1200,6,5,10
+1005,Asus,ROG Zephyrus,Gaming,AMD Ryzen 7,Nvidia RTX 3060,1800,3,5,10
+1006,Acer,Aspire 5,Notebook,Intel i3,Intel UHD,600,15,5,10
+1007,MSI,GF65 Thin,Gaming,Intel i7,Nvidia RTX 2060,1400,2,5,10
+1008,Samsung,Galaxy Book Pro,Ultrabook,Intel i5,Intel Iris,1100,10,5,10
+1009,Huawei,MateBook D14,Notebook,AMD Ryzen 5,Radeon Vega,700,18,5,10
+1010,Microsoft,Surface Laptop 4,Ultrabook,Intel i5,Intel Iris,1300,7,5,10
+1011,Lenovo,Yoga Slim 7,Ultrabook,AMD Ryzen 7,Radeon Vega,1000,9,5,10
+1012,Dell,XPS 13,Ultrabook,Intel i7,Intel Iris,1600,11,5,10
+1013,HP,Omen 15,Gaming,AMD Ryzen 7,Nvidia RTX 3060,1700,5,5,10
+1014,Apple,MacBook Pro 14,Ultrabook,Apple M1 Pro,Integrated,2000,4,5,10
+1015,Asus,VivoBook S14,Notebook,Intel i5,Intel Iris,750,13,5,10
+1016,Acer,Nitro 5,Gaming,Intel i5,Nvidia GTX 1650,900,8,5,10
+1017,MSI,Prestige 14,Ultrabook,Intel i7,Intel Iris,1350,6,5,10
+1018,Samsung,Galaxy Book Flex,Ultrabook,Intel i7,Intel Iris,1400,3,5,10
+1019,Huawei,MateBook X Pro,Ultrabook,Intel i7,Intel Iris,1500,10,5,10
+1020,Microsoft,Surface Book 3,Ultrabook,Intel i7,Nvidia GTX 1660,2200,2,5,10
+
