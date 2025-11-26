@@ -3,6 +3,7 @@
 from inventory.inventory_manager import InventoryManager
 from orders.sales_manager import SalesManager
 from orders.sales_manager import DummySalesCLIError
+from orders.sales_history import generate_random_sales
 
 def main_menu():
     inventory = InventoryManager()
@@ -13,7 +14,8 @@ def main_menu():
         print("1. View Inventory")
         print("2. Create Sales Order")
         print("3. View Sales Orders")
-        print("4. Exit")
+        print("4. Generate 3-Year Sales History")
+        print("5. Exit")
         choice = input("Select an option: ").strip()
 
         if choice == "1":
@@ -27,6 +29,8 @@ def main_menu():
         elif choice == "3":
             sales.show_orders()
         elif choice == "4":
+            generate_random_sales()    
+        elif choice == "5":
             print("Bye!")
             break
         else:
