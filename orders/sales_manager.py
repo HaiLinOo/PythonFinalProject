@@ -1,6 +1,9 @@
 # orders/sales_manager.py
-class DummySalesCLIError(Exception):
-    pass
+import csv
+from pathlib import Path
+
+SALES_FILE = Path(__file__).parent.parent / "data" / "sales_orders.csv"
+
 
 class SalesManager:
     def __init__(self, inventory_manager):
@@ -8,7 +11,8 @@ class SalesManager:
         self.orders = []
 
     def create_order_cli(self):
-        # very simple interactive CLI for now
+        print("\n--- Create New Sales Order ---")
+
         pid = input("Enter product id (e.g., P001): ").strip()
         if pid not in self.inventory.products:
             print("Product not found.")
@@ -21,31 +25,38 @@ class SalesManager:
             return
 
         # check stock
-        stock = self.inventory.products[pid]["stock"]
+        stock = self.inventory.products[pid]["current_stock"]
         if qty > stock:
             print(f"Not enough stock (available: {stock}). Aborting order.")
             return
 
-        # deduct
-        self.inventory.products[pid]["stock"] = stock - qty
-        # save back to file (optional, simple approach)
-        try:
-            import json, os
-            path = os.path.join(os.path.dirname(__file__), "..", "data", "products.json")
-            path = os.path.abspath(path)
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(self.inventory.products, f, indent=2)
-        except Exception as e:
-            print("Warning: couldn't save products:", e)
+        #  Deduct Stock in inventory
+        new_stock = self.inventory.update_stock(pid, qty)
+        print(f"Stock updated. New stock for {pid}: {new_stock}")
 
-        order = {"product_id": pid, "quantity": qty}
+        # Save order to CSV
+        order= {
+            "product_id": pid,
+            "quantity": qty,
+        }
+        self._save_order_to_csv(order)
+
+        # Low-Stock Check
+        product = self.inventory.products[pid]
+        if new_stock <= product["reorder_level"]:
+            print("\n!!! LOW STOCK WARNING !!!")
+            print(f"{product['product']} has only {new_stock} units left.")
+            print(f"Suggested reorder quantity: {product['reorder_quantity']} units.\n")
+                  
         self.orders.append(order)
-        print("Order created:", order)
+        print("Sales order created:", order)
 
-    def show_orders(self):
-        if not self.orders:
-            print("No sales orders yet.")
-            return
-        print("\n--- Sales Orders ---")
-        for i, o in enumerate(self.orders, start=1):
-            print(f"{i}. {o['product_id']} x {o['quantity']}")
+    def _save_order_to_csv(self, order):
+        file_exists = SALES_FILE.exists()
+
+        with open(SALES_FILE, mode='a', newline="", encoding="utf-8") as f:
+            fieldnames = ['product_id', 'quantity']
+            writer = csv.DictWriter(f, fieldnames=['product_id', 'quantity'])
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow(order)
