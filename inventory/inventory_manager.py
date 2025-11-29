@@ -36,19 +36,44 @@ class InventoryManager:
         print("ID | Product Name | Stock | Price")
         print("-------------------------------")
         for pid, info in sorted(self.products.items()):
-            print(f"{pid} | {info["product"]} | {info["current_stock"]} | {info["price"]}")
+            print(f'{pid} | {info["product"]} | {info["current_stock"]} | {info["price"]}')
 
-def updata_stock(self, product_id, delta):
-    pid = str(product_id)
-    if pid not in self.products:
-        raise KeyError(f"Product ID {product_id} not found in inventory.")
-    self.products[pid]["current_stock"] += int(delta)
-    return self.products[pid]["current_stock"]
+    def update_stock(self, product_id, delta):
+        pid = str(product_id)
+        if pid not in self.products:
+            raise KeyError(f"Product ID {product_id} not found in inventory.")
+        self.products[pid]["current_stock"] += int(delta)
+        return self.products[pid]["current_stock"]
+    
+    def check_low_stock(self):
+        low = []
+        for pid, info in self.products.items():
+            if info["current_stock"] <= info["reorder_level"]:
+                low.append((pid, info))
+        return low
 
-def check_low_stock(self):
-    low = []
-    for pid, info in self.products.items():
-        if info["current_stock"] <= info["reorder_level"]:
-            low.append((pid, info))
-    return low
+    # save updates to CSV
+    def _save_to_csv(self):
+        import pandas as pd
 
+        df = pd.DataFrame.from_dict(self.products, orient='index')
+        df.insert(0, "product_id", df.index)
+        df.to_csv(DATA_FILE, index=False)
+    
+    # Reorder function
+    def reorder(self, product_id):
+        pid = str(product_id)
+
+        if pid not in self.products:
+            raise KeyError(f"Product ID {product_id} not found in inventory.")
+            return False
+    
+        info = self.products[pid]
+        qty = info["reorder_quantity"]
+
+        info["current_stock"] += qty
+        print(f"Reordered {qty} units of {info['product']}. (New stock: {info['current_stock']})")
+        self._save_to_csv()
+        return True
+
+    
