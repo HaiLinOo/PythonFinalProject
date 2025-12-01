@@ -33,10 +33,10 @@ class InventoryManager:
 
     def show_inventory(self):
         print("\n--- Current Inventory ---")
-        print("ID | Product Name | Stock | Price")
-        print("-------------------------------")
+        print(f"{'ID':<6} {'Product Name':<25} {'Stock':<8} {'Price':<10}")
+        print("-" * 50)
         for pid, info in sorted(self.products.items()):
-            print(f'{pid} | {info["product"]} | {info["current_stock"]} | {info["price"]}')
+            print(f"{pid:<6} {info['product']:<25} {info['current_stock']:<8} {info['price']:<10.2f}")
 
     def update_stock(self, product_id, delta):
         pid = str(product_id)
@@ -61,19 +61,37 @@ class InventoryManager:
         df.to_csv(DATA_FILE, index=False)
     
     # Reorder function
-    def reorder(self, product_id):
+    def reorder(self, product_id, quantity=None):
+        """Reorder stock for a product.
+
+        If `quantity` is provided, reorder exactly that amount; otherwise
+        use the product's configured `reorder_quantity`.
+        """
         pid = str(product_id)
 
         if pid not in self.products:
             raise KeyError(f"Product ID {product_id} not found in inventory.")
             return False
-    
+
         info = self.products[pid]
-        qty = info["reorder_quantity"]
+        qty = int(quantity) if quantity is not None else int(info.get("reorder_quantity", 0) or 0)
+
+        if qty <= 0:
+            print("Reorder quantity must be greater than zero. No action taken.")
+            return False
 
         info["current_stock"] += qty
         print(f"Reordered {qty} units of {info['product']}. (New stock: {info['current_stock']})")
         self._save_to_csv()
+        # Record the purchase (reorder) to the purchase manager CSV
+        try:
+            from orders.purchase_manager import record_purchase
+            purchase_id, purchase_date = record_purchase(pid, qty, unit_cost=info.get('price', 0))
+            print(f"Recorded purchase {purchase_id} on {purchase_date}.")
+        except Exception:
+            # non-fatal: if purchase recording fails, proceed but notify
+            print("Warning: failed to record purchase in purchase_orders.csv")
+
         return True
 
     
