@@ -1,5 +1,5 @@
 product_id,company,product,type,cpu,gpu,price,current_stock,reorder_level,reorder_quantity
-1001,Lenovo,ThinkPad X1 Carbon,Ultrabook,Intel i7,Intel UHD,1500.0,0,5,10
+1001,Lenovo,ThinkPad X1 Carbon,Ultrabook,Intel i7,Intel UHD,1500.0,5,5,10
 1002,Dell,Inspiron 15,Notebook,Intel i5,Nvidia MX350,900.0,4,5,10
 1003,HP,Pavilion 14,Notebook,Intel i5,Intel Iris,850.0,5,5,10
 1004,Apple,MacBook Air,Ultrabook,Apple M1,Integrated,1200.0,6,5,10
