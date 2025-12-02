@@ -33,10 +33,10 @@ class InventoryManager:
 
     def show_inventory(self):
         print("\n--- Current Inventory ---")
-        print(f"{'ID':<6} {'Product Name':<25} {'Stock':<8} {'Price':<10}")
-        print("-" * 50)
+        print(f"{'ID':<6} {'Product Name':<25} {'Stock':<8} {'Critical':<10} {'Price':<10}")
+        print("-" * 70)
         for pid, info in sorted(self.products.items()):
-            print(f"{pid:<6} {info['product']:<25} {info['current_stock']:<8} {info['price']:<10.2f}")
+            print(f"{pid:<6} {info['product']:<25} {info['current_stock']:<8} {info['reorder_level']:<10} {info['price']:<10.2f}")
 
     def update_stock(self, product_id, delta):
         pid = str(product_id)

@@ -3,7 +3,7 @@ product_id,company,product,type,cpu,gpu,price,current_stock,reorder_level,reorde
 1002,Dell,Inspiron 15,Notebook,Intel i5,Nvidia MX350,900.0,4,5,10
 1003,HP,Pavilion 14,Notebook,Intel i5,Intel Iris,850.0,5,5,10
 1004,Apple,MacBook Air,Ultrabook,Apple M1,Integrated,1200.0,6,5,10
-1005,Asus,ROG Zephyrus,Gaming,AMD Ryzen 7,Nvidia RTX 3060,1800.0,5,5,10
+1005,Asus,ROG Zephyrus,Gaming,AMD Ryzen 7,Nvidia RTX 3060,1800.0,5,7,10
 1006,Acer,Aspire 5,Notebook,Intel i3,Intel UHD,600.0,15,5,10
 1007,MSI,GF65 Thin,Gaming,Intel i7,Nvidia RTX 2060,1400.0,2,5,10
 1008,Samsung,Galaxy Book Pro,Ultrabook,Intel i5,Intel Iris,1100.0,5,5,10
