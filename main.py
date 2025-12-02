@@ -31,7 +31,8 @@ def main_menu():
                 print("A. View Current Stock Levels")
                 print("B. Configure Critical Stock Levels")
                 print("C. Update Stock Levels")
-                print("D. Back to Main Menu")
+                print("D. Low Stock Alerts")
+                print("E. Back to Main Menu")
                 sub_choice = input("Select an option: ").strip().upper()
 
                 if sub_choice == "A":
@@ -44,6 +45,18 @@ def main_menu():
                     delta = input("Enter stock change (positive to add, negative to remove): ").strip()
                     inventory.update_stock(pid, delta)
                 elif sub_choice == "D":
+                    inventory.check_low_stock()
+                    print("\n--- Low Stock Products ---")
+                    low_stock = inventory.check_low_stock()
+                    if not low_stock:
+                        print("All products are above critical stock levels.")
+                    else:
+                        print(f"{'ID':<6} {'Product Name':<25} {'Stock':<8} {'Critical':<10}")
+                        print("-" * 55)
+                        for pid, info in low_stock:
+                            print(f"{pid:<6} {info['product']:<25} {info['current_stock']:<8} {info['reorder_level']:<10}")
+
+                elif sub_choice == "E":
                     break
                 else:
                     print("❌ Invalid sub-choice. Try again.")
