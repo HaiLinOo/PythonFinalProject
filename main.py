@@ -5,14 +5,17 @@ from orders.sales_manager import SalesManager
 from orders.sales_history import generate_random_sales
 from orders.purchase_manager import show_purchases
 from orders.sales_analytics import show_dashboard
+from inventory.stock_configurator import StockConfigurator
+
 
 def main_menu():
     inventory = InventoryManager()
     sales = SalesManager(inventory)
+    configurator = StockConfigurator(inventory)  # use shared InventoryManager instance
 
     while True:
         print("\n=== INVENTORY MANAGEMENT SYSTEM ===")
-        print("1. View Inventory")
+        print("1. Inventory Management")
         print("2. Create Sales Order")
         print("3. View Sales Orders")
         print("4. View Purchase Orders")
@@ -22,12 +25,28 @@ def main_menu():
         choice = input("Select an option: ").strip()
 
         if choice == "1":
-            inventory.show_inventory()
+            # Inventory sub-menu (loop until user returns to main menu)
+            while True:
+                print("\n--- Inventory ---")
+                print("A. View Current Stock Levels")
+                print("B. Configure Critical Stock Levels")
+                print("C. Back to Main Menu")
+                sub_choice = input("Select an option: ").strip().upper()
+
+                if sub_choice == "A":
+                    inventory.show_inventory()
+                elif sub_choice == "B":
+                    pid = input("Enter Product ID to configure: ").strip()
+                    configurator.define_critical_stock(pid)
+                elif sub_choice == "C":
+                    break
+                else:
+                    print("❌ Invalid sub-choice. Try again.")
 
         elif choice == "2":
             # fully working CLI for sales order creation
             sales.create_order_cli()
-        
+
         elif choice == "3":
             sales.show_orders()
 
@@ -48,9 +67,9 @@ def main_menu():
         elif choice == "7":
             print("Bye!")
             break
-        
         else:
-            print("Invalid choice. Try again.")
+            print("❌ Invalid choice. Try again.")
+
 
 if __name__ == "__main__":
     main_menu()
