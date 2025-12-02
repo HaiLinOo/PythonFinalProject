@@ -30,7 +30,8 @@ def main_menu():
                 print("\n--- Inventory ---")
                 print("A. View Current Stock Levels")
                 print("B. Configure Critical Stock Levels")
-                print("C. Back to Main Menu")
+                print("C. Update Stock Levels")
+                print("D. Back to Main Menu")
                 sub_choice = input("Select an option: ").strip().upper()
 
                 if sub_choice == "A":
@@ -39,6 +40,10 @@ def main_menu():
                     pid = input("Enter Product ID to configure: ").strip()
                     configurator.define_critical_stock(pid)
                 elif sub_choice == "C":
+                    pid = input("Enter Product ID to update: ").strip()
+                    delta = input("Enter stock change (positive to add, negative to remove): ").strip()
+                    inventory.update_stock(pid, delta)
+                elif sub_choice == "D":
                     break
                 else:
                     print("❌ Invalid sub-choice. Try again.")
