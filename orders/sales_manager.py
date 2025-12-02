@@ -78,8 +78,23 @@ class SalesManager:
 
         # For the case: Not enough stock -> offer to reorder
         if qty > stock:
-            needed = qty - stock
-            print(f"Not enough stock (available: {stock}). You need {needed} more to fulfill this order.")
+            product = self.inventory.products[pid]
+            reorder_level = int(product.get("reorder_level", 0) or 0)
+            reorder_qty = int(product.get("reorder_quantity", 0) or 0)
+
+            # decide your minimum target after sale
+            target_after_sale = reorder_level # or reorder_qty
+
+            # how much stock is required in total before sale?
+            total_required_before_sale = qty + target_after_sale
+
+            needed = total_required_before_sale - stock
+            if needed <= 0:
+                needed = 0
+            
+            print(f"Not enough stock (available: {stock}).")
+            print(f"To fullfill this sale AND keep minimum stock, you should reorder:  {needed} units to fulfill this order and maintain minimum stock levels.")
+    
 
             # Ask to reorder the minimal required stock first
             choice = input(f"Do you want to reorder the minimum required ({needed}) now? (y/n): ").strip().lower()

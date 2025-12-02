@@ -64,25 +64,62 @@ class InventoryManager:
     def reorder(self, product_id, quantity=None):
         """Reorder stock for a product.
 
-        If `quantity` is provided, reorder exactly that amount; otherwise
-        use the product's configured `reorder_quantity`.
+        If `quantity` is provided, use it as a minimum to reorder, 
+        But still ensure the inventory ends up with at least reorder_level
+        (or reorder_quantity) in stock after fulfilling the current demand.
+
+        If `quantity` is None, reorder the default reorder_quantity.
         """
         pid = str(product_id)
 
         if pid not in self.products:
-            raise KeyError(f"Product ID {product_id} not found in inventory.")
+            raise KeyError(f"Reorder fail: Product {pid} not found in inventory.")
             return False
 
-        info = self.products[pid]
-        qty = int(quantity) if quantity is not None else int(info.get("reorder_quantity", 0) or 0)
+        product = self.products[pid]
 
-        if qty <= 0:
-            print("Reorder quantity must be greater than zero. No action taken.")
-            return False
+        current_stock = int(product.get("current_stock", 0) or 0)
+        reorder_level = int(product.get("reorder_level", 0) or 0)
+        default_reorder_qty = int(product.get("reorder_quantity", 0) or 0)
 
-        info["current_stock"] += qty
-        print(f"Reordered {qty} units of {info['product']}. (New stock: {info['current_stock']})")
+        # ===1. Determine base quantity to reorder===
+        if quantity is None:
+            # use default reorder quantity
+            wanted_qty = default_reorder_qty
+        else:
+            # quantity passed from SalesManager (e.g., the needed amount)
+            wanted_qty = int(quantity)
+            
+        # ===2. Ensure minimum stock after purchase ===
+        # we want:
+        #   final_stock >= reorder_level
+        #
+        #   final_stock = current_stock + ordered_qty
+        # so:
+        #   ordered_qty >= reorder_level - current_stock
+        min_required_to_reach_level = reorder_level - current_stock
+        if min_required_to_reach_level < 0:
+            min_required_to_reach_level = 0
+        
+        # The reorder quantity MUST satisfy BOTH conditions
+        # - the explicitly requested quantity (sales demand)
+        # - the minimum required to reach reorder level
+        final_quantity = max(wanted_qty, min_required_to_reach_level)
+
+        if final_quantity <= 0:
+            print("No reorder needed. Stock is already above minimum level.")
+            return True
+        
+        # ===3. Apply reorder ===
+        new_stock = current_stock + final_quantity
+        product["current_stock"] = new_stock
+
+        print(f"Reordered {final_quantity} units of {product['product']}. New stock: {new_stock})")
+
         self._save_to_csv()
+        return True
+    
+
         # Record the purchase (reorder) to the purchase manager CSV
         try:
             from orders.purchase_manager import record_purchase
