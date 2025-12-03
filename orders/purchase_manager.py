@@ -2,6 +2,9 @@ import csv
 from pathlib import Path
 from datetime import datetime
 import random
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 PURCHASE_FILE = Path(__file__).parent.parent / "data" / "purchase_orders.csv"
 
@@ -89,3 +92,54 @@ def show_purchases(month=None, year=None):
     print('-' * 70)
     for r in rows:
         print(f"{r.get('purchase_id',''):12} {r.get('purchase_date',''):20} {r.get('product_id',''):10} {r.get('quantity',0):<5} {r.get('unit_cost',0):8.2f} {r.get('total_cost',0):10.2f}")
+
+
+def purchase_dashboard(month=None, year=None):
+    """Show a bar chart of purchased quantities per product.
+
+    Optional `month` and `year` can be provided to filter the data.
+    """
+    if not PURCHASE_FILE.exists():
+        print("No purchase data available to plot.")
+        return
+
+    # Read CSV and parse dates
+    try:
+        df = pd.read_csv(PURCHASE_FILE, parse_dates=["purchase_date"])
+    except Exception as e:
+        print("Failed to read purchase CSV:", e)
+        return
+
+    if df.empty:
+        print("No purchase records to display.")
+        return
+
+    # Optional filtering by month/year
+    if month is not None or year is not None:
+        if "purchase_date" in df.columns:
+            df["purchase_date"] = pd.to_datetime(df["purchase_date"], errors="coerce")
+            if month is not None:
+                df = df[df["purchase_date"].dt.month == int(month)]
+            if year is not None:
+                df = df[df["purchase_date"].dt.year == int(year)]
+
+    if df.empty:
+        print("No purchase records match the given period.")
+        return
+
+    # Aggregate quantities by product_id
+    agg = df.groupby("product_id", as_index=False)["quantity"].sum()
+    if agg.empty:
+        print("No purchase quantities to plot.")
+        return
+
+    # Plot
+    plt.figure(figsize=(10, 5))
+    plt.bar(agg["product_id"].astype(str), agg["quantity"], color="skyblue", edgecolor="navy")
+    plt.xlabel("Product ID")
+    plt.ylabel("Quantity Purchased")
+    plt.title("Purchase Orders Dashboard")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+    

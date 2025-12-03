@@ -3,7 +3,7 @@
 from inventory.inventory_manager import InventoryManager
 from orders.sales_manager import SalesManager
 from orders.sales_history import generate_random_sales
-from orders.purchase_manager import show_purchases
+from orders.purchase_manager import purchase_dashboard, show_purchases
 from orders.sales_analytics import show_dashboard
 from inventory.stock_configurator import StockConfigurator
 
@@ -16,18 +16,15 @@ def main_menu():
     while True:
         print("\n=== INVENTORY MANAGEMENT SYSTEM ===")
         print("1. Inventory Management")
-        print("2. Create Sales Order")
-        print("3. View Sales Orders")
-        print("4. View Purchase Orders")
-        print("5. Generate 3-Year Sales History")
-        print("6. Show Sales Dashboard")
-        print("7. Exit")
+        print("2. Sales Management")
+        print("3. Purchase Management")
+        print("4. Exit ")
         choice = input("Select an option: ").strip()
 
         if choice == "1":
             # Inventory sub-menu (loop until user returns to main menu)
             while True:
-                print("\n--- Inventory ---")
+                print("\n--- Inventory Management---")
                 print("A. View Current Stock Levels")
                 print("B. Configure Critical Stock Levels")
                 print("C. Update Stock Levels")
@@ -62,27 +59,64 @@ def main_menu():
                     print("❌ Invalid sub-choice. Try again.")
 
         elif choice == "2":
-            # fully working CLI for sales order creation
-            sales.create_order_cli()
+             # Sales sub-menu (loop until user returns to main menu)
+            while True:
+                print("\n--- Sales Management---")
+                print("A. Create Sales Order")
+                print("B. View Sales Orders")
+                print("C. Show Sales Dashboard")
+                print("D. Generate 3-Year Sales History")
+                print("E. Back to Main Menu")
+                sub_choice2 = input("Select an option: ").strip().upper()
+                if sub_choice2 == "A":
+                    # fully working CLI for sales order creation
+                    sales.create_order_cli()
+                elif sub_choice2 == "B":
+                    sales.show_orders()
+                elif sub_choice2 == "C":
+                    show_dashboard()
+                elif sub_choice2 == "D":
+                    generate_random_sales()
+                elif sub_choice2 == "E":
+                    break
+                else:
+                    print("❌ Invalid sub-choice. Try again.")
 
         elif choice == "3":
-            sales.show_orders()
+              # Sales sub-menu (loop until user returns to main menu)
+            while True:
+                print("\n--- Purchase Management---")
+                print("A. Monthly View Purchase Order")
+                print("B. View Purchase Orders")
+                print("C. Create Critical Stock Level Purchase Orders")
+                print("D. Show Purchase Dashboard")
+                print("E. Back to Main Menu")
+                sub_choice3 = input("Select an option: ").strip().upper()
+                if sub_choice3 == "A": 
+                     # Prompt for optional month/year filter
+                    m = input("Enter month (1-12) to filter, or press Enter for all: ").strip()
+                    y = input("Enter year (e.g. 2025) to filter, or press Enter for all: ").strip()
+                    month = int(m) if m.isdigit() else None
+                    year = int(y) if y.isdigit() else None
+                    show_purchases(month=month, year=year)
+
+                elif sub_choice3 == "B":
+                    show_purchases()
+                elif sub_choice3 == "C":
+                    low_stock = inventory.check_low_stock()
+                    if not low_stock:
+                        print("All products are above critical stock levels.")
+                    else:
+                        for pid, info in low_stock:
+                            needed_qty = info["reorder_level"] * 2 - info["current_stock"]
+                            if needed_qty > 0:
+                                inventory.reorder(pid, quantity=needed_qty)
+                elif sub_choice3 == "D":
+                    purchase_dashboard()
+                elif sub_choice3 == "E":
+                    break
 
         elif choice == "4":
-            # Prompt for optional month/year filter
-            m = input("Enter month (1-12) to filter, or press Enter for all: ").strip()
-            y = input("Enter year (e.g. 2025) to filter, or press Enter for all: ").strip()
-            month = int(m) if m.isdigit() else None
-            year = int(y) if y.isdigit() else None
-            show_purchases(month=month, year=year)
-
-        elif choice == "5":
-            generate_random_sales()
-
-        elif choice == "6":
-            show_dashboard()
-
-        elif choice == "7":
             print("Bye!")
             break
         else:

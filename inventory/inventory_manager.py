@@ -117,13 +117,11 @@ class InventoryManager:
         print(f"Reordered {final_quantity} units of {product['product']}. New stock: {new_stock})")
 
         self._save_to_csv()
-        return True
-    
 
         # Record the purchase (reorder) to the purchase manager CSV
         try:
             from orders.purchase_manager import record_purchase
-            purchase_id, purchase_date = record_purchase(pid, qty, unit_cost=info.get('price', 0))
+            purchase_id, purchase_date = record_purchase(pid, final_quantity, unit_cost=product.get('price', 0))
             print(f"Recorded purchase {purchase_id} on {purchase_date}.")
         except Exception:
             # non-fatal: if purchase recording fails, proceed but notify

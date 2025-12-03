@@ -129,7 +129,8 @@ class SalesManager:
                     return
         
         # Now stock is sufficient -> process order
-        self.inventory.products[pid]["current_stock"] -= qty
+        # Deduct quantity from inventory
+        new_stock = self.inventory.update_stock(pid, -qty)  # negative qty to deduct
         self.inventory._save_to_csv()
 
         # Build order with id and date so CSV rows match existing format
@@ -138,14 +139,7 @@ class SalesManager:
         order = {"order_id": order_id, "order_date": order_date, "product_id": pid, "quantity": qty}
         self.orders.append(order)
         print("Order created:", order)
-        
-        #  Deduct Stock in inventory
-        new_stock = self.inventory.update_stock(pid, qty)
         print(f"Stock updated. New stock for {pid}: {new_stock}")
-
-        # Save order to CSV
-        # Save order to CSV using the full fieldset
-        self._save_order_to_csv(order)
 
         # Low-Stock Check
         product = self.inventory.products[pid]
@@ -153,11 +147,15 @@ class SalesManager:
             print("\n!!! LOW STOCK WARNING !!!")
             print(f"{product['product']} has only {new_stock} units left.")
             print(f"Suggested reorder quantity: {product['reorder_quantity']} units.\n")
-                  
-        # already appended above; just confirm
-        print("Sales order created:", order)
+
+        # Save order to CSV
+        self._save_order_to_csv(order)
+
+        # Confirm order saved
+        print("Sales order created and inventory updated:", order)
 
     def _save_order_to_csv(self, order):
+        """Save a sales order to the CSV file."""
         file_exists = SALES_FILE.exists()
         # Ensure CSV has columns: order_id, order_date, product_id, quantity
         fieldnames = ['order_id', 'order_date', 'product_id', 'quantity']
